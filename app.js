@@ -45,11 +45,21 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 var io = require('socket.io').listen(server);
 
-var RedisStore = require('socket.io/lib/stores/redis');
+var RedisStore = require('socket.io/lib/stores/redis')
+  , redis = require('socket.io/node_modules/redis')
+  , pub = redis.createClient()
+  , sub = redis.createClient()
+  , client = redis.createClient();
+
+pub.auth('foobared', function(err) { if (err) throw err; });
+sub.auth('foobared', function(err) { if (err) throw err; });
+client.auth('foobared', function(err) { if (err) throw err; });
+
 io.set('store', new RedisStore({
-	redisPub: config.redis || {},
-	redisSub: config.redis || {},
-	redisClient: config.redis || {}
+  redis: redis,
+	redisPub: pub,
+	redisSub: sub,
+	redisClient: client
 }));
 
 
