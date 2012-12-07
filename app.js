@@ -9,14 +9,9 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , opts = require('opts')
-	, config = require('config');
+  , config = require('config');
 
-opts.parse([{
-	short: 'p',
-	long: 'port',
-	description: 'server listen port.',
-	value: true
-}]);
+opts.parse([{ short: 'p', long: 'port', description: 'server listen port.', value: true }]);
 
 var app = express();
 
@@ -51,21 +46,20 @@ var RedisStore = require('socket.io/lib/stores/redis')
   , sub = redis.createClient()
   , client = redis.createClient();
 
-pub.auth('foobared', function(err) { if (err) throw err; });
-sub.auth('foobared', function(err) { if (err) throw err; });
-client.auth('foobared', function(err) { if (err) throw err; });
+pub.auth(config.redis.password, function(err) { if (err) throw err; });
+sub.auth(config.redis.password, function(err) { if (err) throw err; });
+client.auth(config.redis.password, function(err) { if (err) throw err; });
 
 io.set('store', new RedisStore({
   redis: redis,
-	redisPub: pub,
-	redisSub: sub,
-	redisClient: client
+  redisPub: pub,
+  redisSub: sub,
+  redisClient: client
 }));
 
-
 io.sockets.on('connection', function(socket) {
-	socket.on('message', function(data) {
-		socket.broadcast.emit('message', { server: 'other client', data: JSON.stringify(data) });
-	});
+  socket.on('message', function(data) {
+    socket.broadcast.emit('message', { server: 'other client', data: JSON.stringify(data) });
+  });
 });
 
