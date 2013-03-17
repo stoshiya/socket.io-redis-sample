@@ -27,7 +27,7 @@ app.configure(function(){
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
-app.configure('development', function(){
+app.configure('development', function () {
   app.use(express.errorHandler());
 });
 
@@ -45,6 +45,16 @@ var RedisStore = require('socket.io/lib/stores/redis')
   , pub = redis.createClient()
   , sub = redis.createClient()
   , client = redis.createClient();
+
+pub.on('error', function(err) {
+  console.log('pub:', err);
+});
+sub.on('error', function(err) {
+  console.log('sub:', err);
+});
+client.on('error', function(err) {
+  console.log('client:', err);
+});
 
 pub.auth(config.redis.password, function(err) { if (err) throw err; });
 sub.auth(config.redis.password, function(err) { if (err) throw err; });
