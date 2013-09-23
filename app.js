@@ -5,7 +5,6 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , opts = require('opts')
@@ -32,7 +31,6 @@ app.configure('development', function () {
 });
 
 app.get('/', routes.index);
-app.get('/users', user.list);
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
@@ -69,7 +67,6 @@ io.set('store', new RedisStore({
 
 io.sockets.on('connection', function(socket) {
   socket.on('message', function(data) {
-    socket.broadcast.emit('message', { server: 'other client', data: JSON.stringify(data) });
+    socket.broadcast.emit('message', data);
   });
 });
-
