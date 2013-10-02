@@ -2,7 +2,7 @@
   var socket = io.connect();
 
   socket.on('connect', function() {
-    $('p').append('. You are using ' + socket.socket.transport.name + '.');
+    $('p').text('Connection established. You are using ' + socket.socket.transport.name + '.');
   });
 
   socket.on('message', function(data) {
