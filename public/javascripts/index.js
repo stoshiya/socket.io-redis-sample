@@ -1,5 +1,7 @@
 (function($) {
   var socket = io.connect();
+  socket.socket.options['connect timeout'] = 2000;
+
   var start = new Date();
 
   socket.on('connect', function() {
