@@ -1,8 +1,9 @@
 (function($) {
   var socket = io.connect();
+  var start = new Date();
 
   socket.on('connect', function() {
-    $('p').text('Connection established. You are using ' + socket.socket.transport.name + '.');
+    $('p').text('Connection established in ' + (new Date() - start) + 'msec. You are using ' + socket.socket.transport.name + '.');
     $('input').removeAttr('disabled');
     $('button').removeAttr('disabled');
   });
