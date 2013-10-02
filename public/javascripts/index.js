@@ -1,6 +1,10 @@
 (function($) {
   var socket = io.connect();
 
+  socket.on('connect', function() {
+    $('span.transport').text('You are using ' + socket.socket.transport.name);
+  });
+
   socket.on('message', function(data) {
     $('div.message > ul').append('<li>' + new Date().toString() + ': ' + data + '</li>');
   });

@@ -66,6 +66,8 @@ io.set('store', new RedisStore({
 }));
 
 io.sockets.on('connection', function(socket) {
+  console.log(io.transports[socket.id].name);
+
   socket.on('message', function(data) {
     socket.broadcast.emit('message', data);
   });
