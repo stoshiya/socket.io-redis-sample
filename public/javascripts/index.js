@@ -3,6 +3,7 @@
 
   socket.on('connect', function() {
     $('p').text('Connection established. You are using ' + socket.socket.transport.name + '.');
+    $('button').removeAttr('disabled');
   });
 
   socket.on('message', function(data) {
