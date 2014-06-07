@@ -54,9 +54,11 @@ client.on('error', function(err) {
   console.log('client:', err);
 });
 
-pub.auth(config.redis.password, function(err) { if (err) throw err; });
-sub.auth(config.redis.password, function(err) { if (err) throw err; });
-client.auth(config.redis.password, function(err) { if (err) throw err; });
+if (typeof config.redis !== 'undefined' && typeof config.redis.password !== 'undefined') {
+  pub.auth(config.redis.password, function(err) { if (err) throw err; });
+  sub.auth(config.redis.password, function(err) { if (err) throw err; });
+  client.auth(config.redis.password, function(err) { if (err) throw err; });
+}
 
 io.set('store', new RedisStore({
   redis: redis,

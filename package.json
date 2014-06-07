@@ -1,15 +1,28 @@
 {
-  "name": "application-name",
+  "name": "socket.io-RedisStore-sample",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node app"
   },
   "dependencies": {
-    "express": "< 4.0.0",
+    "config": "^0.4.36",
+    "express": "^3.10.3",
     "jade": "*",
-    "socket.io": "0.9.16",
-    "config": "*",
-    "opts": "*"
-  }
+    "opts": "*",
+    "socket.io": "^0.9.17"
+  },
+  "description": "This is simple node.js application with socket.io and RedisStore.",
+  "main": "app.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stoshiya/socket.io-RedisStore-sample.git"
+  },
+  "author": "Toshiya SAITOH <stoshiya@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stoshiya/socket.io-RedisStore-sample/issues"
+  },
+  "homepage": "https://github.com/stoshiya/socket.io-RedisStore-sample"
 }
