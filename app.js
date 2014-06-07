@@ -1,75 +1,61 @@
+// Module dependencies.
 
-/**
- * Module dependencies.
- */
+var express = require('express');
+var path = require('path');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 
-var express = require('express')
-  , routes = require('./routes')
-  , http = require('http')
-  , path = require('path')
-  , opts = require('opts')
-  , config = require('config');
+var routes = require('./routes/index');
+var app = module.exports = express();
 
-opts.parse([{ short: 'p', long: 'port', description: 'server listen port.', value: true }]);
+app.set('port', process.env.PORT || 3000);
 
-var app = express();
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
-app.configure(function(){
-  app.set('port', opts.get('port') || process.env.PORT || 3000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
-});
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.configure('development', function () {
-  app.use(express.errorHandler());
-});
+/// error handlers
 
-app.get('/', routes.index);
-
-var server = http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
-
-var io = require('socket.io').listen(server);
-
-var RedisStore = require('socket.io/lib/stores/redis')
-  , redis = require('socket.io/node_modules/redis')
-  , pub = redis.createClient()
-  , sub = redis.createClient()
-  , client = redis.createClient();
-
-pub.on('error', function(err) {
-  console.log('pub:', err);
-});
-sub.on('error', function(err) {
-  console.log('sub:', err);
-});
-client.on('error', function(err) {
-  console.log('client:', err);
-});
-
-if (typeof config.redis !== 'undefined' && typeof config.redis.password !== 'undefined') {
-  pub.auth(config.redis.password, function(err) { if (err) throw err; });
-  sub.auth(config.redis.password, function(err) { if (err) throw err; });
-  client.auth(config.redis.password, function(err) { if (err) throw err; });
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
 }
 
-io.set('store', new RedisStore({
-  redis: redis,
-  redisPub: pub,
-  redisSub: sub,
-  redisClient: client
-}));
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+
+app.use('/', routes.index);
+
+var server = app.listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
+});
+
+var io = require('socket.io')(server);
+var redis = require('socket.io-redis');
+io.adapter(redis({ host: '127.0.0.1', port: 6379 }));
 
 io.sockets.on('connection', function(socket) {
-  console.log(io.transports[socket.id].name);
-
   socket.on('message', function(data) {
     socket.broadcast.emit('message', data);
   });

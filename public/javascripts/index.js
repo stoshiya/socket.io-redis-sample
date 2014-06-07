@@ -1,11 +1,12 @@
 (function($) {
-  var socket = io.connect();
-  socket.socket.options['connect timeout'] = 2000;
+  var socket = io();
 
   var start = new Date();
 
   socket.on('connect', function() {
-    $('p').text('Connection established in ' + (new Date() - start) + 'msec. You are using ' + socket.socket.transport.name + '.');
+    var index = socket.io.engine.upgrade ? 1 : 0;
+    $('p').text('Connection established in ' + (new Date() - start) + 'msec. ' +
+      'You are using ' + socket.io.engine.transports[index] + '.');
     $('input').removeAttr('disabled');
     $('button').removeAttr('disabled');
   });
